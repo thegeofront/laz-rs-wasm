@@ -19,41 +19,44 @@
             }
         };
 
-        const file = "point-color.laz";
+        
         import init, { WasmLasZipDecompressor } from "../pkg/laz_rs_wasm.js";
 
-        init()
-            .then(() => {
-                fetch(file)
-                    .then(response => {
-                        response.arrayBuffer()
-                            .then((buf) => {
-                                // Uint8Array of the file
-                                var abInt = new Uint8Array(buf);
-                                
-                                var decompressor = new WasmLasZipDecompressor(abInt);
+        async function read(file) {
+            
+            await init();
+            const res = await fetch(file);
+            const buf = await res.arrayBuffer();
 
-                                console.log(decompressor);
-                                console.log("Point format: " + decompressor.header.point_format_id);
-                                console.log("Number of points: " + decompressor.header.num_points);
+            // Uint8Array of the file
+            const abInt = new Uint8Array(buf);
+                
+            const decompressor = new WasmLasZipDecompressor(abInt);
 
-                                var uncompressed_pointformat = decompressor.header.point_format_id & 0x3f;
+            console.log(decompressor);
+            console.log(decompressor.header);
+            console.log("Point format: " + decompressor.header.point_format_id);
+            console.log("Number of points: " + decompressor.header.num_points);
 
-                                // We can iterate points one by one if we want, or we can make a Uint8Array
-                                // of size (header.point_size * header.num_points) and decompress them all at once
-                                var out = new Uint8Array(decompressor.header.point_size);
-                                // Decompress the first 10 points
-                                for (var i = 0; i < 10; i++) {
-                                    decompressor.decompress_many(out);
-                                    
-                                    var dv = new DataView(out.buffer);
-                                    console.log(pointFormatReaders[uncompressed_pointformat](dv));
-                                }
-                                // free to avoid memory leak
-                                decompressor.free();
-                            });
-                    });
-            });
+            var uncompressed_pointformat = decompressor.header.point_format_id & 0x3f;
+
+            // We can iterate points one by one if we want, or we can make a Uint8Array
+            // of size (header.point_size * header.num_points) and decompress them all at once
+            var out = new Uint8Array(decompressor.header.point_size);
+            // Decompress the first 10 points
+            for (var i = 0; i < 10; i++) {
+                decompressor.decompress_many(out);
+                
+                var dv = new DataView(out.buffer);
+                console.log(pointFormatReaders[uncompressed_pointformat](dv));
+            }
+            // free to avoid memory leak
+            decompressor.free();
+
+        }
+
+        read("point-color.laz");
+
     </script>
 </body>
 

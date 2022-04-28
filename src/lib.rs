@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::*;
 use std::io::Seek;
 extern crate console_error_panic_hook;
 
-#[wasm_bindgen]
+#[wasm_bindgen(inspectable)]
 #[derive(Copy, Clone)]
 pub struct WasmQuickHeader {
     pub major: u8,
