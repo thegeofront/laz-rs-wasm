@@ -32,7 +32,7 @@ impl From<QuickHeader> for WasmQuickHeader {
     }
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(inspectable)]
 pub struct WasmLasZipDecompressor {
     decompressor: LasZipDecompressor<'static, std::io::Cursor<Vec<u8>>>,
     pub header: WasmQuickHeader

@@ -23,7 +23,7 @@
         import init, { WasmLasZipDecompressor } from "../pkg/laz_rs_wasm.js";
 
         async function read(file) {
-            
+
             await init();
             const res = await fetch(file);
             const buf = await res.arrayBuffer();
@@ -34,7 +34,7 @@
             const decompressor = new WasmLasZipDecompressor(abInt);
 
             console.log(decompressor);
-            console.log(decompressor.header);
+            console.log(decompressor.header.toJSON());
             console.log("Point format: " + decompressor.header.point_format_id);
             console.log("Number of points: " + decompressor.header.num_points);
 
@@ -52,7 +52,6 @@
             }
             // free to avoid memory leak
             decompressor.free();
-
         }
 
         read("point-color.laz");
